@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 课程咨询顾问 · Agent Loop + 教学自进化</title>
+  <link rel="stylesheet" href="/static/style.css?v=8" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">🎓 AI 课程咨询顾问 <span class="tag">Agent Loop · 边聊边教 · 自进化</span></div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="chat">咨询对话</button>
+      <button class="tab" data-tab="review">后台(工单 + 套路库)</button>
+    </nav>
+  </header>
+
+  <!-- 指标看板 -->
+  <section class="metrics" id="metrics">
+    <div class="metric clickable" id="m-kb-card" title="点击查看套路库(训练样本)">
+      <span class="m-num" id="m-kb">-</span><span class="m-label">训练样本 🔎</span></div>
+    <div class="metric"><span class="m-num" id="m-chats">-</span><span class="m-label">咨询总数</span></div>
+    <div class="metric"><span class="m-num" id="m-handoff">-</span><span class="m-label">转人工率</span></div>
+    <div class="metric"><span class="m-num" id="m-hit">-</span><span class="m-label">套路命中率</span></div>
+  </section>
+
+  <!-- 套路库快速查看弹窗 -->
+  <div class="modal-mask" id="kb-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <span>📚 套路库(训练样本)</span>
+        <button class="modal-close" id="kb-close">✕</button>
+      </div>
+      <div class="modal-body" id="kb-list"></div>
+    </div>
+  </div>
+
+  <!-- AI 归纳的套路总纲弹窗(只读,派生自样本) -->
+  <div class="modal-mask" id="sum-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <span>🧠 AI 套路总纲 <span class="tag-mini">可编辑 · 重新归纳时会保留你的改写并合并新样本</span></span>
+        <button class="modal-close" id="sum-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <textarea class="summary-edit" id="sum-text" placeholder="加载中…"></textarea>
+        <div class="settings-actions">
+          <button id="sum-save" class="btn-ok">保存改写</button>
+          <button id="sum-regen" class="btn-brain">↻ 重新归纳(合并新样本)</button>
+          <span class="settings-hint" id="sum-status"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 完整系统提示词弹窗(只读) -->
+  <div class="modal-mask" id="prompt-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <span>🧩 完整系统提示词 <span class="tag-mini">技术流程 + 你的业务设定</span></span>
+        <button class="modal-close" id="prompt-close">✕</button>
+      </div>
+      <div class="modal-body"><pre class="prompt-text" id="prompt-text"></pre></div>
+    </div>
+  </div>
+
+  <main>
+    <!-- 对话页 -->
+    <section id="tab-chat" class="panel active">
+      <div class="chat-wrap">
+        <div class="chat-col">
+          <div class="mode-bar">
+            <label class="switch">
+              <input type="checkbox" id="teach-toggle" />
+              <span>教学模式</span>
+            </label>
+            <span class="mode-hint" id="mode-hint">客户视角:提问,看 AI 按你教的套路回答。</span>
+          </div>
+
+          <div class="messages" id="messages"></div>
+
+          <!-- 客户咨询输入 -->
+          <div class="composer" id="ask-box">
+            <input id="input" type="text" placeholder="以客户身份提问,例如:这个课多少钱?" autocomplete="off" />
+            <button id="send">发送</button>
+            <button id="reset" class="ghost" title="清空当前会话上下文">重置</button>
+          </div>
+
+          <!-- 教学输入 -->
+          <div class="teach-box" id="teach-box">
+            <div class="teach-title">✍️ 教 AI 一条套路(客户问题 + 标准答案 + 这么答的原因)</div>
+            <input id="t-question" type="text" placeholder="客户问题,例如:这个课多少钱?" autocomplete="off" />
+            <textarea id="t-answer" placeholder="标准答案 / 话术,例如:先别急着看价格,我想先了解下您的基础和目标…"></textarea>
+            <textarea id="t-note" placeholder="这么答的原因 / 套路(可写触发条件),例如:客户直接询价时,先挖需求塑造价值再报价"></textarea>
+            <button id="teach-btn">教给 AI</button>
+
+            <div class="taught-wrap">
+              <div class="taught-title">📒 已教过 (<span id="taught-count">0</span>) · 避免重复</div>
+              <div class="taught-list" id="taught-list"></div>
+            </div>
+          </div>
+
+          <div class="quick" id="quick"></div>
+        </div>
+        <aside class="trace-col">
+          <div class="trace-title">🔍 Agent 思考与工具调用轨迹</div>
+          <div class="trace" id="trace"><div class="trace-empty">发起一次咨询,这里会显示 Agent Loop 的每一步(含参照了哪些套路)。</div></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 后台页 -->
+    <section id="tab-review" class="panel">
+      <div class="review-actions">
+        <button id="summary-btn" class="btn-brain">🧠 查看 AI 归纳的套路总纲</button>
+        <button id="prompt-btn" class="btn-brain">🧩 查看完整系统提示词</button>
+      </div>
+
+      <!-- AI 业务设定:全局人设/语气/铁律,改完即时生效 -->
+      <div class="settings-panel">
+        <div class="settings-title">⚙️ AI 业务设定 <span class="tag-mini">全局语气 + 铁律,注入系统提示词,保存即时生效</span></div>
+        <textarea id="directive" placeholder="加载中…"></textarea>
+        <div class="settings-actions">
+          <button id="save-directive" class="btn-ok">保存设定</button>
+          <span class="settings-hint">承载"简洁、绝不直接报价、先确认意向再对接班主任"这类全局策略。</span>
+        </div>
+      </div>
+
+      <div class="review-wrap">
+        <div class="review-col">
+          <h3>还没学会的问题(工单)</h3>
+          <div id="tickets" class="cards"></div>
+        </div>
+        <div class="review-col">
+          <h3>套路库(训练样本 · 可改可删)</h3>
+          <div id="samples" class="cards"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js?v=8"></script>
+</body>
+</html>
