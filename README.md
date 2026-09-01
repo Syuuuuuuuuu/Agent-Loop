@@ -1,4 +1,4 @@
-# 🎓 AI 课程咨询顾问 · 边聊边教的 Agent 自进化 Demo
+# 🎓 AI 课程咨询顾问 · 边聊边教的 Agent 自进化
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
@@ -7,14 +7,14 @@
 
 > English: [README.en.md](./README.en.md)
 
-**一个「麻雀虽小、五脏俱全」的 AI Agent 教学演示项目**：老师用**对话**把销售套路教给 AI，AI 按套路应答；答不上来时**自动转人工**，老师补充答案后，**同一个问题下次自动答对**——知识库随使用增长，转人工率持续下降，系统"越用越聪明"。
+**一个「麻雀虽小、五脏俱全」的 AI Agent 项目**：老师用**对话**把销售套路教给 AI，AI 按套路应答；答不上来时**自动转人工**，老师补充答案后，**同一个问题下次自动答对**——知识库随使用增长，转人工率持续下降，系统"越用越聪明"。
 
-它完整演示了两个企业级核心技术点：
+它完整实现了两个核心技术点：
 
 1. **Agent Loop**：模型在「推理 → 选工具 → 调用 → 观察 → 再决策 → 收尾」的循环中自主决策，带循环边界控制（防死循环）与**全程轨迹可视化**；
 2. **教学自进化闭环**：没学过 → 转人工生成工单 → 老师补答案 → 进套路库 → 下次秒答，形成可量化的自进化飞轮。
 
-**零门槛演示**：默认使用可替换的 **Mock 大模型桩**，离线、零成本、结果可重复；换真实大模型只需改一行配置（已内置豆包/火山引擎 ARK 实现）。
+**零门槛上手**：默认使用可替换的 **Mock 大模型桩**，离线、零成本、结果可重复；换真实大模型只需改一行配置（已内置豆包/火山引擎 ARK 实现）。
 
 ---
 
@@ -90,7 +90,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-浏览器打开 **http://127.0.0.1:8000** 即可开始演示。
+浏览器打开 **http://127.0.0.1:8000** 即可开始使用。
 
 > Windows 详细图文步骤见 [启动指南.md](./启动指南.md)。
 
@@ -98,7 +98,7 @@ python run.py
 
 | 模式 | 配置 | 说明 |
 | --- | --- | --- |
-| **Mock 离线桩**（默认） | 无需任何配置 | 规则模拟模型决策，离线、零成本、结果可重复，适合教学演示与开发调试 |
+| **Mock 离线桩**（默认） | 无需任何配置 | 规则模拟模型决策，离线、零成本、结果可重复，适合教学与开发调试 |
 | **真实豆包（ARK）** | 复制 `.env.example` 为 `.env` 并填写 | 真实语义理解，Agent 行为更智能；需要火山引擎账号 |
 
 ```bash
@@ -116,12 +116,12 @@ ARK_CHAT_MODEL=<你的接入点ID>
 # 终端 1：启动服务
 python run.py
 
-# 终端 2：跑一遍完整演示主线（教学 → Agent Loop → 自进化闭环）
+# 终端 2：跑一遍完整流程（教学 → Agent Loop → 自进化闭环）
 python _smoke_test.py
 # 结尾打印 ALL PASSED 即一切正常
 ```
 
-## 🎬 五分钟演示
+## 🎬 五分钟快速上手
 
 照着 [docs/演示用例.md](./docs/演示用例.md) 操作，一句话版：
 
@@ -157,7 +157,7 @@ python _smoke_test.py
 ```
 ai-customer-service/
 ├── run.py                  # 启动入口：python run.py
-├── _smoke_test.py          # 冒烟测试：验证演示主线
+├── _smoke_test.py          # 冒烟测试：验证核心链路
 ├── requirements.txt        # 依赖（FastAPI / uvicorn / openai / dotenv）
 ├── .env.example            # 环境变量示例（真实密钥填到 .env，不提交）
 ├── app/
@@ -174,7 +174,7 @@ ai-customer-service/
 │   │       └── handoff.py           # 转人工 + 工单
 │   ├── llm/
 │   │   ├── base.py         # LLMProvider 抽象（换模型只需实现 chat()）
-│   │   ├── mock_provider.py# Mock 规则桩（离线演示）
+│   │   ├── mock_provider.py# Mock 规则桩（离线可重复）
 │   │   └── ark_provider.py # 豆包/火山引擎 ARK（OpenAI 兼容）
 │   ├── knowledge/
 │   │   ├── embedding.py    # 本地轻量 embedding（零依赖）
@@ -217,7 +217,7 @@ class MyProvider(LLMProvider):
 | 文档 | 内容 |
 | --- | --- |
 | [docs/需求清单.md](./docs/需求清单.md) | 项目定位、技术选型、需求决策记录 |
-| [docs/演示用例.md](./docs/演示用例.md) | 五分钟演示脚本（每步预期行为） |
+| [docs/演示用例.md](./docs/演示用例.md) | 快速上手指南（每步预期行为） |
 | [docs/系统架构思路-通俗版.md](./docs/系统架构思路-通俗版.md) | 架构设计思路，小白也能看懂 |
 | [docs/项目架构解读-AI-Agent.md](./docs/项目架构解读-AI-Agent.md) | 代码级架构解读 |
 | [docs/上下文管理设计方案-对标ClaudeCode.md](./docs/上下文管理设计方案-对标ClaudeCode.md) | 上下文管理设计，对标 Claude Code |
@@ -230,7 +230,7 @@ class MyProvider(LLMProvider):
 <details>
 <summary>Q：默认模式要不要 API Key / 联网？</summary>
 
-不需要。默认 Mock 桩完全离线运行，`pip install` 一次后断网也能完整演示。
+不需要。默认 Mock 桩完全离线运行，`pip install` 一次后断网也能完整运行。
 </details>
 
 <details>
@@ -240,7 +240,7 @@ class MyProvider(LLMProvider):
 </details>
 
 <details>
-<summary>Q：想清空数据重新演示怎么办？</summary>
+<summary>Q：想清空数据重新开始怎么办？</summary>
 
 关闭服务，删除项目根目录的 `data.db`，重新启动会自动重建空库。
 </details>
@@ -248,7 +248,7 @@ class MyProvider(LLMProvider):
 <details>
 <summary>Q：这个项目能直接上生产吗？</summary>
 
-它是**教学演示项目**：会话存进程内、SQLite 单机、无鉴权。生产化建议：会话换 Redis、向量换 Chroma/pgvector、加用户体系与权限（架构与接口已按可扩展方式设计）。
+它是**教学项目**：会话存进程内、SQLite 单机、无鉴权。生产化建议：会话换 Redis、向量换 Chroma/pgvector、加用户体系与权限（架构与接口已按可扩展方式设计）。
 </details>
 
 ## 🤝 贡献

@@ -1,20 +1,20 @@
-# 🎓 AI Course Consultant — A Teach-While-Chatting Agent Self-Evolution Demo
+# 🎓 AI Course Consultant — A Teach-While-Chatting Agent with Self-Evolution
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
-[![Runs offline](https://img.shields.io/badge/Offline_demo-No_API_key_needed-orange)](#-run-modes)
+[![Runs offline](https://img.shields.io/badge/Runs_offline-No_API_key_needed-orange)](#-run-modes)
 
 > 中文: [README.md](./README.md)
 
-**A small-but-complete AI Agent demo**: a teacher teaches sales playbooks to the AI **through conversation**, and the AI answers customers by following those playbooks. When it doesn't know the answer, it **escalates to a human automatically**; after the teacher fills in the answer, **the same question gets answered correctly next time** — the knowledge base grows with usage, the escalation rate keeps dropping, and the system gets smarter the more it's used.
+**A small-but-complete AI Agent project**: a teacher teaches sales playbooks to the AI **through conversation**, and the AI answers customers by following those playbooks. When it doesn't know the answer, it **escalates to a human automatically**; after the teacher fills in the answer, **the same question gets answered correctly next time** — the knowledge base grows with usage, the escalation rate keeps dropping, and the system gets smarter the more it's used.
 
-It demonstrates two enterprise-grade techniques end to end:
+It implements two enterprise-grade techniques end to end:
 
 1. **Agent Loop**: the model autonomously decides in a "reason → pick tool → call → observe → re-decide → finish" loop, with loop boundary control (anti-runaway) and **full trace visualization**;
 2. **Teach-to-Evolve closed loop**: unlearned question → escalate to human ticket → teacher adds the answer → stored in the playbook → answered instantly next time — a quantifiable self-evolution flywheel.
 
-**Zero-friction demo**: powered by a swappable **Mock LLM stub** by default — offline, free, reproducible. Switching to a real LLM requires one config line (Doubao / Volcengine ARK implementation built in).
+**Zero-friction to run**: powered by a swappable **Mock LLM stub** by default — offline, free, reproducible. Switching to a real LLM requires one config line (Doubao / Volcengine ARK implementation built in).
 
 ---
 
@@ -24,7 +24,7 @@ It demonstrates two enterprise-grade techniques end to end:
 | --- | --- |
 | 🔁 Agent Loop engine | Autonomous tool selection, parallel tool calls, boundary control (max steps / timeout), tool errors fed back to the model for self-correction |
 | 👨‍🏫 Teach-as-config | No code needed — teach business playbooks as "question + standard answer + why" triples |
-| 📚 Playbook RAG | Top-k semantic retrieval of the most relevant demos, so context never overflows as the library grows; swappable embedding backends with automatic fallback |
+| 📚 Playbook RAG | Top-k semantic retrieval of the most relevant samples, so context never overflows as the library grows; swappable embedding backends with automatic fallback |
 | 🧠 Playbook summary | The AI induces general answering strategies from all samples; teachers can rewrite it, and regeneration **preserves the teacher's version** (state merging) |
 | 🎫 Self-evolution loop | Not confident → human ticket → answer added via backoffice → same question answered correctly next time |
 | ✍️ In-chat refinement | Critique any AI reply on the spot → AI re-answers → one click to **freeze it into a playbook sample** |
@@ -90,7 +90,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-Open **http://127.0.0.1:8000** in your browser and start the demo.
+Open **http://127.0.0.1:8000** in your browser and start using it.
 
 > Step-by-step Windows guide: [启动指南.md](./启动指南.md) (Chinese).
 
@@ -116,12 +116,12 @@ ARK_CHAT_MODEL=<your-endpoint-id>
 # Terminal 1: start the server
 python run.py
 
-# Terminal 2: run the full demo storyline (teach → Agent Loop → self-evolution)
+# Terminal 2: run the full flow (teach → Agent Loop → self-evolution)
 python _smoke_test.py
 # "ALL PASSED" at the end means everything works
 ```
 
-## 🎬 Five-Minute Demo
+## 🎬 Five-Minute Quick Start
 
 Follow [docs/演示用例.md](./docs/演示用例.md) (Chinese). In one sentence:
 
@@ -157,7 +157,7 @@ Follow [docs/演示用例.md](./docs/演示用例.md) (Chinese). In one sentence
 ```
 ai-customer-service/
 ├── run.py                  # entry point: python run.py
-├── _smoke_test.py          # smoke test for the demo storyline
+├── _smoke_test.py          # smoke test for the core flow
 ├── requirements.txt        # FastAPI / uvicorn / openai / dotenv
 ├── .env.example            # env template (real secrets go to .env, never committed)
 ├── app/
@@ -174,7 +174,7 @@ ai-customer-service/
 │   │       └── handoff.py           # human escalation + tickets
 │   ├── llm/
 │   │   ├── base.py         # LLMProvider abstraction (implement chat() to swap models)
-│   │   ├── mock_provider.py# rule-based stub (offline demo)
+│   │   ├── mock_provider.py# rule-based stub (offline & reproducible)
 │   │   └── ark_provider.py # Doubao / Volcengine ARK (OpenAI-compatible)
 │   ├── knowledge/
 │   │   ├── embedding.py    # dependency-free local embedding
@@ -182,7 +182,7 @@ ai-customer-service/
 │   ├── services/           # chat / playbook / review / settings
 │   └── data/               # mock course catalog + success stories
 ├── static/                 # vanilla HTML/CSS/JS frontend (chat + backoffice)
-└── docs/                   # requirements / architecture / demo script / dev notes (Chinese)
+└── docs/                   # requirements / architecture / walkthrough script / dev notes (Chinese)
 ```
 
 ## 🧠 Design Highlights Worth Studying
@@ -214,14 +214,14 @@ Then point `LLM_PROVIDER` in `app/config.py` at your implementation. See [app/ll
 
 ## 📖 Docs
 
-The `docs/` folder contains detailed design documents in Chinese: requirements & decisions, architecture walkthroughs (beginner-friendly and code-level), context-management design (benchmarked against Claude Code), the demo script, and a retrospective on building this project with AI.
+The `docs/` folder contains detailed design documents in Chinese: requirements & decisions, architecture walkthroughs (beginner-friendly and code-level), context-management design (benchmarked against Claude Code), the walkthrough script, and a retrospective on building this project with AI.
 
 ## ❓ FAQ
 
 <details>
 <summary>Q: Does the default mode need an API key or internet?</summary>
 
-No. The Mock stub runs fully offline; after `pip install`, the whole demo works without a network.
+No. The Mock stub runs fully offline; after `pip install`, everything works without a network.
 </details>
 
 <details>
@@ -231,7 +231,7 @@ No. Set `LLM_PROVIDER=ark` in `.env` and fill in the key. The Agent Loop and too
 </details>
 
 <details>
-<summary>Q: How do I reset the data for a fresh demo?</summary>
+<summary>Q: How do I reset the data and start fresh?</summary>
 
 Stop the server, delete `data.db` in the project root, and restart — the empty database is recreated automatically.
 </details>
@@ -239,7 +239,7 @@ Stop the server, delete `data.db` in the project root, and restart — the empty
 <details>
 <summary>Q: Is this production-ready?</summary>
 
-It's a **teaching demo**: sessions live in process memory, SQLite is single-machine, and there is no auth. For production: move sessions to Redis, vectors to Chroma/pgvector, and add identity & permissions (the architecture and APIs are designed to be extended this way).
+It's a **teaching project**: sessions live in process memory, SQLite is single-machine, and there is no auth. For production: move sessions to Redis, vectors to Chroma/pgvector, and add identity & permissions (the architecture and APIs are designed to be extended this way).
 </details>
 
 ## 🤝 Contributing
